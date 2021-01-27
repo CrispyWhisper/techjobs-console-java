@@ -7,9 +7,7 @@ import org.apache.commons.csv.CSVRecord;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by LaunchCode
@@ -57,12 +55,12 @@ public class JobData {
     /**
      * Returns results of search the jobs data by key/value, using
      * inclusion of the search term.
-     *
+     * <p>
      * For example, searching for employer "Enterprise" will include results
      * with "Enterprise Holdings, Inc".
      *
-     * @param column   Column that should be searched.
-     * @param value Value of teh field to search for
+     * @param column Column that should be searched.
+     * @param value  Value of teh field to search for
      * @return List of all jobs matching the criteria
      */
     public static ArrayList<HashMap<String, String>> findByColumnAndValue(String column, String value) {
@@ -83,6 +81,46 @@ public class JobData {
 
         return jobs;
     }
+
+    public static ArrayList<HashMap<String, String>> findByValue(String search) {
+
+        loadData();
+
+        ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
+
+
+        for (HashMap<String, String> job : allJobs) {
+            for (Map.Entry<String, String> column : job.entrySet()) {
+                String lowerCaseColumn = column.getValue().toLowerCase();
+                String lowerCaseSearch = search.toLowerCase();
+
+                if (lowerCaseColumn.contains(lowerCaseSearch)) {
+                    if (jobs.contains(job)) {
+                        jobs.remove(job);
+                    }
+
+                    jobs.add(job);
+
+                }
+            }
+        }
+
+
+        if(jobs.isEmpty()) {
+            System.out.println("There are no jobs containing this search.");
+        }
+
+        for (HashMap<String, String> oneJob : jobs) {
+            System.out.println("*****");
+            for (Map.Entry<String, String> entry : oneJob.entrySet()) {
+                System.out.println(entry.getKey() + ":  " + entry.getValue());
+            }
+            System.out.println("*****\n");
+        }
+
+        return jobs;
+    }
+
 
     /**
      * Read in data from a CSV file and store it in a list
